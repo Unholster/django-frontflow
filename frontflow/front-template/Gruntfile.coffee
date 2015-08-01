@@ -18,7 +18,7 @@ module.exports = (grunt) ->
         files: [{
           expand: true
           cwd: "src/coffee/"
-          src: ["**.coffee"]
+          src: ["*.coffee"]
           dest: "#{buildDir}/front/coffee/"
           ext: ".js"
         }]
@@ -57,19 +57,19 @@ module.exports = (grunt) ->
         stripBanners: true
 
       compiledjs:
-        src: [ "#{buildDir}/front/*/**.js" ]
+        src: [ "#{buildDir}/front/*/*.js" ]
         dest: "#{buildDir}/front/compiled.js"
 
       compiledcss:
-        src: [ "#{buildDir}/front/*/**.css" ]
+        src: [ "#{buildDir}/front/*/*.css" ]
         dest: "#{buildDir}/front/compiled.css"
 
       alljs:
-        src: [ "#{buildDir}/**.js", "!#{buildDir}/front/**", "#{buildDir}/front/compiled.js" ]
+        src: [ "#{buildDir}/**/*.js", "!#{buildDir}/front/**/*", "#{buildDir}/front/compiled.js" ]
         dest: "#{buildDir}/front/all.js"
 
       allcss:
-        src: [ "#{buildDir}/**.css", "!#{buildDir}/front/**", "#{buildDir}/front/compiled.js" ]
+        src: [ "#{buildDir}/**/*.css", "!#{buildDir}/front/**/*", "#{buildDir}/front/compiled.css" ]
         dest: "#{buildDir}/front/all.css"
 
 
@@ -83,8 +83,8 @@ module.exports = (grunt) ->
       front:
         files: [{
           expand: true
-          cwd: "#{buildDir}/front/*.js"
-          src: ["front*.js"]
+          cwd: "#{buildDir}/front"
+          src: [ "compiled.js", "all.js" ]
           dest: "#{buildDir}"
           ext: ".min.js"
         }]
