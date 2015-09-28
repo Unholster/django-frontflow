@@ -5,6 +5,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-sass"
   grunt.loadNpmTasks "grunt-contrib-less"
   grunt.loadNpmTasks "grunt-contrib-concat"
+  grunt.loadNpmTasks "grunt-bower-concat"
 
   # Change base only after loading npm tasks
   buildDir = grunt.option('buildDir')
@@ -49,6 +50,12 @@ module.exports = (grunt) ->
           ext: ".css"
         }]
 
+    bower_concat:
+      all:
+        dest: "#{buildDir}/front/bower/build.js"
+        cssDest: "#{buildDir}/front/bower/build.css"
+        mainFiles:
+          'bootstrap': [ "dist/css/bootstrap.css", "dist/js/bootstrap.js"]
 
     #Assumes individual files are already minified (no further uglification/minification)
     concat:
@@ -112,4 +119,4 @@ module.exports = (grunt) ->
         files: [ "#{buildDir}/**.css" ]
         tasks: [ "concat:allcss" ]
 
-  grunt.registerTask "default", ['coffee', 'sass', 'less', 'concat', 'uglify']
+  grunt.registerTask "default", ['coffee', 'sass', 'less', 'bower_concat', 'concat', 'uglify']
