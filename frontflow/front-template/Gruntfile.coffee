@@ -5,6 +5,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-sass"
   grunt.loadNpmTasks "grunt-contrib-less"
   grunt.loadNpmTasks "grunt-contrib-concat"
+  grunt.loadNpmTasks "grunt-contrib-copy"
   grunt.loadNpmTasks "grunt-bower-concat"
 
   # Change base only after loading npm tasks
@@ -57,6 +58,13 @@ module.exports = (grunt) ->
         mainFiles:
           'bootstrap': [ "dist/css/bootstrap.css", "dist/js/bootstrap.js"]
 
+    copy:
+      bootstrapFonts:
+        expand: true
+        cwd: "bower_components/bootstrap/dist/fonts/"
+        src: ["*"]
+        dest: "#{buildDir}/front/fonts"
+
     #Assumes individual files are already minified (no further uglification/minification)
     concat:
       options:
@@ -64,19 +72,29 @@ module.exports = (grunt) ->
         stripBanners: true
 
       compiledjs:
-        src: [ "#{buildDir}/front/*/*.js" ]
+        src: [ "#{buildDir}/front/coffee/**/*.js" ]
         dest: "#{buildDir}/front/compiled.js"
 
       compiledcss:
-        src: [ "#{buildDir}/front/*/*.css" ]
+        src: [
+          "#{buildDir}/front/sass/*.css",
+          "#{buildDir}/front/less/*.css"
+        ]
         dest: "#{buildDir}/front/compiled.css"
 
       alljs:
-        src: [ "#{buildDir}/**/*.js", "!#{buildDir}/front/**/*", "#{buildDir}/front/compiled.js" ]
+        src: [
+          "#{buildDir}/front/bower/build.js",
+          "#{buildDir}/front/include/*.js",
+          "#{buildDir}/front/coffee/**/*.js"
+        ]
         dest: "#{buildDir}/front/all.js"
 
       allcss:
-        src: [ "#{buildDir}/**/*.css", "!#{buildDir}/front/**/*", "#{buildDir}/front/compiled.css" ]
+        src: [
+          "#{buildDir}/front/bower/build.css",
+          "#{buildDir}/front/compiled.css"
+        ]
         dest: "#{buildDir}/front/all.css"
 
 
@@ -92,16 +110,15 @@ module.exports = (grunt) ->
           expand: true
           cwd: "#{buildDir}/front"
           src: [ "compiled.js", "all.js" ]
-          dest: "#{buildDir}"
+          dest: "#{buildDir}/front"
           ext: ".min.js"
         }]
-
 
     # Watch relevant source files and perform tasks when they change
     watch:
       coffee:
         files: [ "src/coffee/**" ]
-        tasks: [ "coffee:front", "concat:compiledjs", "concat:alljs", "uglify" ]
+        tasks: [ "coffee:front", "concat:compiledjs", "concat:alljs"]
 
       sass:
         files: [ "src/sass/**" ]
@@ -113,10 +130,10 @@ module.exports = (grunt) ->
 
       alljs:
         files: [ "#{buildDir}/**.js" ]
-        tasks: [ "concat:alljs" ]
+        tasks: [ "concat:alljs", 'uglify:front']
 
       allcss:
         files: [ "#{buildDir}/**.css" ]
         tasks: [ "concat:allcss" ]
 
-  grunt.registerTask "default", ['coffee', 'sass', 'less', 'bower_concat', 'concat', 'uglify']
+  grunt.registerTask "default", ['coffee', 'sass', 'less', 'bower_concat', 'concat', 'uglify', 'copy']
