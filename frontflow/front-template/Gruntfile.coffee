@@ -21,7 +21,7 @@ module.exports = (grunt) ->
           expand: true
           cwd: "src/coffee/"
           src: ["*.coffee"]
-          dest: "#{buildDir}/front/coffee/"
+          dest: "build/coffee/"
           ext: ".js"
         }]
 
@@ -34,7 +34,7 @@ module.exports = (grunt) ->
           expand: true
           cwd: "src/sass/"
           src: ["*.sass"]
-          dest: "#{buildDir}/front/sass/"
+          dest: "build/sass/"
           ext: ".css"
         }]
 
@@ -47,23 +47,23 @@ module.exports = (grunt) ->
           expand: true
           cwd: "src/less/"
           src: ["*.less"]
-          dest: "#{buildDir}/front/less/"
+          dest: "build/less/"
           ext: ".css"
         }]
 
     bower_concat:
       all:
-        dest: "#{buildDir}/front/bower/build.js"
-        cssDest: "#{buildDir}/front/bower/build.css"
+        dest: "build/bower.js"
+        cssDest: "build/bower.css"
         mainFiles:
           'bootstrap': [ "dist/css/bootstrap.css", "dist/js/bootstrap.js"]
 
     copy:
       bootstrapFonts:
         expand: true
-        cwd: "bower_components/bootstrap/dist/fonts/"
-        src: ["*"]
-        dest: "#{buildDir}/front/fonts"
+        cwd: "bower_components/bootstrap/dist"
+        src: ["fonts/*"]
+        dest: "#{buildDir}"
 
     #Assumes individual files are already minified (no further uglification/minification)
     concat:
@@ -71,31 +71,20 @@ module.exports = (grunt) ->
         separator: ';'
         stripBanners: true
 
-      compiledjs:
-        src: [ "#{buildDir}/front/coffee/**/*.js" ]
-        dest: "#{buildDir}/front/compiled.js"
-
-      compiledcss:
+      js:
         src: [
-          "#{buildDir}/front/sass/*.css",
-          "#{buildDir}/front/less/*.css"
+          "build/bower.js",
+          "build/coffee/**/*.js"
         ]
-        dest: "#{buildDir}/front/compiled.css"
+        dest: "#{buildDir}/js/front.js"
 
-      alljs:
+      css:
         src: [
-          "#{buildDir}/front/bower/build.js",
-          "#{buildDir}/front/include/*.js",
-          "#{buildDir}/front/coffee/**/*.js"
+          "build/bower.css",
+          "build/less/*.css",
+          "build/sass/*.css"
         ]
-        dest: "#{buildDir}/front/all.js"
-
-      allcss:
-        src: [
-          "#{buildDir}/front/bower/build.css",
-          "#{buildDir}/front/compiled.css"
-        ]
-        dest: "#{buildDir}/front/all.css"
+        dest: "#{buildDir}/css/front.css"
 
 
     #Published uglified version of compiled app.js
@@ -108,9 +97,9 @@ module.exports = (grunt) ->
       front:
         files: [{
           expand: true
-          cwd: "#{buildDir}/front"
-          src: [ "compiled.js", "all.js" ]
-          dest: "#{buildDir}/front"
+          cwd: "#{buildDir}"
+          src: [ "js/front.js" ]
+          dest: "#{buildDir}"
           ext: ".min.js"
         }]
 
@@ -118,22 +107,22 @@ module.exports = (grunt) ->
     watch:
       coffee:
         files: [ "src/coffee/**" ]
-        tasks: [ "coffee:front", "concat:compiledjs", "concat:alljs"]
+        tasks: [ "coffee:front", "concat:js" ]
 
       sass:
         files: [ "src/sass/**" ]
-        tasks: [ "sass:front", "concat:compiledcss", "concat:allcss" ]
+        tasks: [ "sass:front", "concat:css" ]
 
       less:
         files: [ "src/less/**" ]
-        tasks: [ "less:front", "concat:compiledcss", "concat:allcss" ]
+        tasks: [ "less:front", "concat:css" ]
 
-      alljs:
+      js:
         files: [ "#{buildDir}/**.js" ]
-        tasks: [ "concat:alljs", 'uglify:front']
+        tasks: [ "concat:js", 'uglify:front']
 
-      allcss:
+      css:
         files: [ "#{buildDir}/**.css" ]
-        tasks: [ "concat:allcss" ]
+        tasks: [ "concat:css" ]
 
   grunt.registerTask "default", ['coffee', 'sass', 'less', 'bower_concat', 'concat', 'uglify', 'copy']
